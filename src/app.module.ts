@@ -65,10 +65,8 @@ import { CommentsModule } from './comments/comments.module';
       imports: [ConfigModule],
       inject: [ConfigService],
     }),
-    CommentsModule,
-    PostsModule,
+
     UsersModule,
-    BlogsModule,
     TagsModule,
     FilesModule,
     AuthModule,
@@ -77,6 +75,9 @@ import { CommentsModule } from './comments/comments.module';
     MailModule,
     MailerModule,
     HomeModule,
+    BlogsModule,
+    PostsModule,
+    CommentsModule,
   ],
 })
 export class AppModule {}

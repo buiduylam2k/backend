@@ -37,15 +37,15 @@ export class PostSchemaClass extends EntityDocumentHelper {
   @Prop()
   isDeleted: boolean;
 
-  @Prop({ type: Types.ObjectId, ref: UserSchemaClass.name })
+  @Prop({ type: Types.ObjectId, ref: 'UserSchemaClass' })
   @Type(() => UserSchemaClass)
   author: string;
 
-  @Prop({ type: [Types.ObjectId], ref: TagSchemaClass.name })
+  @Prop({ type: [Types.ObjectId], ref: 'TagSchemaClass' })
   @Type(() => TagSchemaClass)
   tags: string[];
 
-  @Prop({ type: [Types.ObjectId], ref: CommentSchemaClass.name })
+  @Prop({ type: [Types.ObjectId], ref: 'CommentSchemaClass' })
   @Type(() => CommentSchemaClass)
   comments: string[];
 }

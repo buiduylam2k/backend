@@ -27,7 +27,7 @@ export class TagSchemaClass extends EntityDocumentHelper {
   @Prop()
   isDeleted: boolean;
 
-  @Prop({ type: Types.ObjectId, ref: UserSchemaClass.name })
+  @Prop({ type: Types.ObjectId, ref: 'UserSchemaClass' })
   @Type(() => UserSchemaClass)
   author: string;
 }
