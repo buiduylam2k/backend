@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { now, HydratedDocument, Types } from 'mongoose';
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { EntityDocumentHelper } from 'src/utils/document-entity-helper';
 import { UserSchemaClass } from 'src/users/infrastructure/persistence/document/entities/user.schema';
 import { TagSchemaClass } from 'src/tags/infrastructure/persistence/document/entities/tag.schema';
@@ -17,15 +17,12 @@ export type PostSchemaDocument = HydratedDocument<PostSchemaClass>;
 })
 export class PostSchemaClass extends EntityDocumentHelper {
   @Prop()
-  @Expose({ groups: ['me', 'admin'], toPlainOnly: true })
   content: string;
 
   @Prop()
-  @Expose({ groups: ['me', 'admin'], toPlainOnly: true })
   banner: string;
 
   @Prop()
-  @Expose({ groups: ['me', 'admin'], toPlainOnly: true })
   views: number;
 
   @Prop({ default: now })
@@ -34,7 +31,9 @@ export class PostSchemaClass extends EntityDocumentHelper {
   @Prop({ default: now })
   updatedAt: Date;
 
-  @Prop()
+  @Prop({
+    default: false,
+  })
   isDeleted: boolean;
 
   @Prop({ type: Types.ObjectId, ref: 'UserSchemaClass' })

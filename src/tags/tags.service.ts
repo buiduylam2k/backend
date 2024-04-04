@@ -16,10 +16,12 @@ export class TagsService {
     const clonedPayload = {
       ...createtagDto,
       author: authorId,
+      isDeleted: false,
     };
 
     const tagObject = await this.tagsRepository.findOne({
       name: clonedPayload.name,
+      isDeleted: false,
     });
 
     if (tagObject) {
@@ -27,7 +29,7 @@ export class TagsService {
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
           errors: {
-            email: 'tagAlreadyExists',
+            name: 'tagAlreadyExists',
           },
         },
         HttpStatus.UNPROCESSABLE_ENTITY,

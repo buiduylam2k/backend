@@ -28,4 +28,5 @@ export abstract class BlogRepository {
   ): Promise<Blog | null>;
 
   abstract softDelete(id: Blog['id']): Promise<void>;
+  abstract deleteAll(): Promise<void>;
 }

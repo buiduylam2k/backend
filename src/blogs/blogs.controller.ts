@@ -28,12 +28,6 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
 import { Roles } from 'src/roles/roles.decorator';
 import { RoleEnum } from 'src/roles/roles.enum';
 
-@ApiBearerAuth()
-@Roles(RoleEnum.admin, RoleEnum.user)
-@SerializeOptions({
-  groups: ['admin', 'me'],
-})
-@UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Blogs')
 @Controller({
   path: 'blogs',
@@ -42,6 +36,12 @@ import { RoleEnum } from 'src/roles/roles.enum';
 export class BlogsController {
   constructor(private readonly blogsService: BlogsService) {}
 
+  @ApiBearerAuth()
+  @Roles(RoleEnum.admin, RoleEnum.user)
+  @SerializeOptions({
+    groups: ['admin', 'me'],
+  })
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(
@@ -75,17 +75,34 @@ export class BlogsController {
     );
   }
 
-  @Get(':id')
+  // @Get(':id')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiParam({
+  //   name: 'id',
+  //   type: String,
+  //   required: true,
+  // })
+  // findOne(@Param('id') id: Blog['id']): Promise<NullableType<Blog>> {
+  //   return this.blogsService.findOne({ id });
+  // }
+
+  @Get(':slug')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
-    name: 'id',
+    name: 'slug',
     type: String,
     required: true,
   })
-  findOne(@Param('id') id: Blog['id']): Promise<NullableType<Blog>> {
-    return this.blogsService.findOne({ id });
+  findSlug(@Param('slug') slug: Blog['slug']): Promise<NullableType<Blog>> {
+    return this.blogsService.findOne({ slug });
   }
 
+  @ApiBearerAuth()
+  @Roles(RoleEnum.admin, RoleEnum.user)
+  @SerializeOptions({
+    groups: ['admin', 'me'],
+  })
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
@@ -120,5 +137,11 @@ export class BlogsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: Blog['id']): Promise<void> {
     return this.blogsService.softDelete(id);
+  }
+
+  @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeAll(): Promise<void> {
+    return this.blogsService.deleteAll();
   }
 }

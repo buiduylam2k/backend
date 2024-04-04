@@ -3,26 +3,26 @@ import { TagSchemaClass } from '../entities/tag.schema';
 
 export class TagMapper {
   static toDomain(raw: TagSchemaClass): Tag {
-    const topic = new Tag();
-    topic.id = raw._id.toString();
-    topic.name = raw.name;
-    topic.createdAt = raw.createdAt;
-    topic.updatedAt = raw.updatedAt;
-    topic.isDeleted = raw.isDeleted;
-    topic.author = raw.author;
+    const tag = new Tag();
+    tag.id = raw._id.toString();
+    tag.name = raw.name;
+    tag.createdAt = raw.createdAt;
+    tag.updatedAt = raw.updatedAt;
+    tag.isDeleted = raw.isDeleted;
+    tag.author = raw.author;
 
-    return topic;
+    return tag;
   }
 
-  static toPersistence(topic: Tag): TagSchemaClass {
-    const topicEntity = new TagSchemaClass();
+  static toPersistence(tag: Tag): TagSchemaClass {
+    const tagEntity = new TagSchemaClass();
 
-    topicEntity.name = topic.name;
-    topicEntity.createdAt = topic.createdAt;
-    topicEntity.updatedAt = topic.updatedAt;
-    topicEntity.isDeleted = topic.isDeleted;
-    topicEntity.author = topic.author;
+    tagEntity.name = tag.name;
+    tagEntity.createdAt = tag.createdAt;
+    tagEntity.updatedAt = tag.updatedAt;
+    tagEntity.isDeleted = tag.isDeleted;
+    tagEntity.author = tag.author;
 
-    return topicEntity;
+    return tagEntity;
   }
 }

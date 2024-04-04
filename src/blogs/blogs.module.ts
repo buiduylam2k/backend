@@ -4,9 +4,10 @@ import { DocumentBlogPersistenceModule } from './infrastructure/persistence/docu
 import { BlogsService } from './blogs.service';
 import { BlogsController } from './blogs.controller';
 import { TagsModule } from 'src/tags/tags.module';
+import { SlugGeneratorModule } from 'src/slug-generator/slug-generator.module';
 
 @Module({
-  imports: [DocumentBlogPersistenceModule, TagsModule],
+  imports: [DocumentBlogPersistenceModule, TagsModule, SlugGeneratorModule],
   controllers: [BlogsController],
   providers: [BlogsService],
   exports: [BlogsService, DocumentBlogPersistenceModule],

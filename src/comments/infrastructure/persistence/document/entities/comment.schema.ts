@@ -25,7 +25,9 @@ export class CommentSchemaClass extends EntityDocumentHelper {
   @Prop({ default: now })
   updatedAt: Date;
 
-  @Prop()
+  @Prop({
+    default: false,
+  })
   isDeleted: boolean;
 
   @Prop({ type: Types.ObjectId, ref: 'UserSchemaClass' })

@@ -7,13 +7,18 @@ import { CreateBlogDto } from './dto/create-blog.dto';
 import { Blog } from './domain/blog';
 import { FilterBlogDto, SortBlogDto } from './dto/query-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
+import { SlugGeneratorService } from 'src/slug-generator/slug-generator.service';
 
 @Injectable()
 export class BlogsService {
-  constructor(private readonly blogsRepository: BlogRepository) {}
+  constructor(
+    private readonly blogsRepository: BlogRepository,
+    private readonly slugGenerator: SlugGeneratorService,
+  ) {}
 
   async create(createBlogDto: CreateBlogDto, authorId: string): Promise<Blog> {
     const { title, content, tags } = createBlogDto;
+    const slug = this.slugGenerator.generateUniqueSlug(title);
 
     const clonedPayload = {
       title,
@@ -22,6 +27,7 @@ export class BlogsService {
       views: 0,
       isDeleted: false,
       author: authorId,
+      slug,
     };
 
     const blogObject = await this.blogsRepository.findOne({
@@ -86,16 +92,22 @@ export class BlogsService {
   }
 
   async update(id: Blog['id'], payload: UpdateBlogDto): Promise<Blog | null> {
-    const clonedPayload = { ...payload } as Blog;
+    let updateSlug;
 
-    const blog = await this.blogsRepository.findOne({ title: payload.title });
+    if (payload.title) {
+      updateSlug = this.slugGenerator.generateUniqueSlug(payload.title);
+    }
 
-    if (blog) {
+    const clonedPayload = { ...payload, slug: updateSlug } as Blog;
+
+    const blog = await this.blogsRepository.findOne({ id });
+
+    if (!blog) {
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
           errors: {
-            title: 'blogAlreadyExists',
+            id: 'blogNotExists',
           },
         },
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -107,5 +119,9 @@ export class BlogsService {
 
   async softDelete(id: Blog['id']): Promise<void> {
     await this.blogsRepository.softDelete(id);
+  }
+
+  async deleteAll() {
+    await this.blogsRepository.deleteAll();
   }
 }

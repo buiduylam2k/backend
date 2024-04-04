@@ -67,6 +67,7 @@ export class TagsDocumentRepository implements TagRepository {
         transform: UserMapper.toDomain,
       })
       .lean();
+
     // https://stackoverflow.com/questions/77168216/why-mongoose-populate-causes-maximum-call-stack-size-exceeded-error-in-nextjs
     return tagsObjects.map((tagObject) => TagMapper.toDomain(tagObject));
   }

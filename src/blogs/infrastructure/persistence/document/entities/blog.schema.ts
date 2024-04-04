@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { now, HydratedDocument, Types } from 'mongoose';
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { EntityDocumentHelper } from 'src/utils/document-entity-helper';
 import { UserSchemaClass } from 'src/users/infrastructure/persistence/document/entities/user.schema';
 import { TagSchemaClass } from 'src/tags/infrastructure/persistence/document/entities/tag.schema';
@@ -15,17 +15,23 @@ export type BlogSchemaDocument = HydratedDocument<BlogSchemaClass>;
   },
 })
 export class BlogSchemaClass extends EntityDocumentHelper {
-  @Prop()
-  @Expose({ groups: ['me', 'admin'], toPlainOnly: true })
+  @Prop({
+    unique: true,
+    index: true,
+  })
   title: string;
 
   @Prop()
-  @Expose({ groups: ['me', 'admin'], toPlainOnly: true })
   content: string;
 
   @Prop()
-  @Expose({ groups: ['me', 'admin'], toPlainOnly: true })
   views: number;
+
+  @Prop({
+    unique: true,
+    index: true,
+  })
+  slug: string;
 
   @Prop({ default: now })
   createdAt: Date;
@@ -33,7 +39,9 @@ export class BlogSchemaClass extends EntityDocumentHelper {
   @Prop({ default: now })
   updatedAt: Date;
 
-  @Prop()
+  @Prop({
+    default: false,
+  })
   isDeleted: boolean;
 
   @Prop({ type: Types.ObjectId, ref: 'UserSchemaClass' })
@@ -46,5 +54,3 @@ export class BlogSchemaClass extends EntityDocumentHelper {
 }
 
 export const BlogSchema = SchemaFactory.createForClass(BlogSchemaClass);
-
-BlogSchema.index({ title: 1 });

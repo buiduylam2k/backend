@@ -5,7 +5,6 @@ export class BlogMapper {
   static toDomain(raw: BlogSchemaClass): Blog {
     const blog = new Blog();
     blog.id = raw._id.toString();
-    blog.title = raw.title;
     blog.content = raw.content;
     blog.createdAt = raw.createdAt;
     blog.updatedAt = raw.updatedAt;
@@ -13,6 +12,8 @@ export class BlogMapper {
     blog.author = raw.author;
     blog.tags = raw.tags;
     blog.views = raw.views;
+    blog.title = raw.title;
+    blog.slug = raw.slug;
 
     return blog;
   }
@@ -28,6 +29,7 @@ export class BlogMapper {
     blogEntity.author = blog.author;
     blogEntity.tags = blog.tags;
     blogEntity.views = blog.views;
+    blogEntity.slug = blog.slug;
 
     return blogEntity;
   }

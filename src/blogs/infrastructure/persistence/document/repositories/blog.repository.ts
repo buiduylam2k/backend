@@ -10,6 +10,7 @@ import { Blog } from 'src/blogs/domain/blog';
 import { BlogMapper } from '../mappers/blog.mapper';
 import { FilterBlogDto, SortBlogDto } from 'src/blogs/dto/query-blog.dto';
 import { UserMapper } from 'src/users/infrastructure/persistence/document/mappers/user.mapper';
+import { TagMapper } from 'src/tags/infrastructure/persistence/document/mappers/tag.mapper';
 
 @Injectable()
 export class BlogsDocumentRepository implements BlogRepository {
@@ -35,9 +36,12 @@ export class BlogsDocumentRepository implements BlogRepository {
     paginationOptions: IPaginationOptions;
   }): Promise<Blog[]> {
     const where: EntityCondition<Blog> = {
-      tags: (filterOptions?.tagIds ?? []) as unknown as string[],
       isDeleted: false,
     };
+
+    if (filterOptions?.tagIds) {
+      where.tags = filterOptions.tagIds as unknown as string[];
+    }
 
     const blogObjects = await this.blogsModel
       .find(where)
@@ -57,7 +61,10 @@ export class BlogsDocumentRepository implements BlogRepository {
         path: 'author',
         transform: UserMapper.toDomain,
       })
-      .populate('tags')
+      .populate({
+        path: 'tags',
+        transform: TagMapper.toDomain,
+      })
       .lean();
 
     return blogObjects.map((blogObject) => BlogMapper.toDomain(blogObject));
@@ -65,7 +72,18 @@ export class BlogsDocumentRepository implements BlogRepository {
 
   async findOne(fields: EntityCondition<Blog>): Promise<NullableType<Blog>> {
     if (fields.id) {
-      const blogObject = await this.blogsModel.findById(fields.id);
+      const blogObject = await this.blogsModel
+        .findById(fields.id)
+        .populate({
+          path: 'author',
+          transform: UserMapper.toDomain,
+        })
+        .populate({
+          path: 'tags',
+          transform: TagMapper.toDomain,
+        })
+        .lean();
+
       return blogObject ? BlogMapper.toDomain(blogObject) : null;
     }
 
@@ -75,6 +93,7 @@ export class BlogsDocumentRepository implements BlogRepository {
 
   async update(id: Blog['id'], payload: Partial<Blog>): Promise<Blog | null> {
     const clonedPayload = { ...payload };
+
     delete clonedPayload.id;
 
     const filter = { _id: id };
@@ -87,10 +106,6 @@ export class BlogsDocumentRepository implements BlogRepository {
   }
 
   async softDelete(id: Blog['id']): Promise<void> {
-    // await this.blogsModel.deleteOne({
-    //   _id: id,
-    // });
-
     await this.blogsModel.findOneAndUpdate(
       {
         _id: id,
@@ -99,5 +114,9 @@ export class BlogsDocumentRepository implements BlogRepository {
         isDeleted: true,
       },
     );
+  }
+
+  async deleteAll() {
+    await this.blogsModel.deleteMany({});
   }
 }

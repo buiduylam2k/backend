@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { now, HydratedDocument, Types } from 'mongoose';
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { EntityDocumentHelper } from 'src/utils/document-entity-helper';
 import { UserSchemaClass } from 'src/users/infrastructure/persistence/document/entities/user.schema';
 
@@ -15,7 +15,6 @@ export type TagSchemaDocument = HydratedDocument<TagSchemaClass>;
 })
 export class TagSchemaClass extends EntityDocumentHelper {
   @Prop()
-  @Expose({ groups: ['me', 'admin'], toPlainOnly: true })
   name: string;
 
   @Prop({ default: now })
@@ -24,7 +23,9 @@ export class TagSchemaClass extends EntityDocumentHelper {
   @Prop({ default: now })
   updatedAt: Date;
 
-  @Prop()
+  @Prop({
+    default: false,
+  })
   isDeleted: boolean;
 
   @Prop({ type: Types.ObjectId, ref: 'UserSchemaClass' })
