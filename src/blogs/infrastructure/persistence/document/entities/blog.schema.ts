@@ -25,6 +25,9 @@ export class BlogSchemaClass extends EntityDocumentHelper {
   content: string;
 
   @Prop()
+  banner: string;
+
+  @Prop()
   views: number;
 
   @Prop({

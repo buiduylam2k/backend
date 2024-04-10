@@ -7,13 +7,18 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { Post } from './domain/post';
 import { FilterPostDto, SortPostDto } from './dto/query-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { CommentRepository } from './infrastructure/persistence/comment.repository';
+import { CreateCommentDto } from './dto/create-comment.dto';
 
 @Injectable()
 export class PostsService {
-  constructor(private readonly postsRepository: PostRepository) {}
+  constructor(
+    private readonly postsRepository: PostRepository,
+    private readonly commentsRepository: CommentRepository,
+  ) {}
 
   async create(createPostDto: CreatePostDto, authorId: string): Promise<Post> {
-    const { content, tags, banner } = createPostDto;
+    const { content, tags, banner, title } = createPostDto;
 
     const clonedPayload = {
       banner,
@@ -23,6 +28,7 @@ export class PostsService {
       isDeleted: false,
       author: authorId,
       comments: [],
+      title,
     };
 
     return this.postsRepository.create(clonedPayload);
@@ -49,22 +55,22 @@ export class PostsService {
   }
 
   async addView(id: Post['id']): Promise<Post | null> {
-    const blog = await this.postsRepository.findOne({ id });
+    const post = await this.postsRepository.findOne({ id });
 
-    if (!blog) {
+    if (!post) {
       throw new HttpException(
         {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          status: HttpStatus.NOT_FOUND,
           errors: {
-            id: 'postNotExists',
+            id: 'postNotFound',
           },
         },
-        HttpStatus.UNPROCESSABLE_ENTITY,
+        HttpStatus.NOT_FOUND,
       );
     }
 
     const payload = {
-      views: blog.views + 1,
+      views: post.views + 1,
     };
 
     return this.postsRepository.update(id, payload);
@@ -75,15 +81,15 @@ export class PostsService {
 
     const post = await this.postsRepository.findOne({ id });
 
-    if (post) {
+    if (!post) {
       throw new HttpException(
         {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          status: HttpStatus.NOT_FOUND,
           errors: {
-            id: 'postAlreadyExists',
+            id: 'postNotFound',
           },
         },
-        HttpStatus.UNPROCESSABLE_ENTITY,
+        HttpStatus.NOT_FOUND,
       );
     }
 
@@ -92,5 +98,39 @@ export class PostsService {
 
   async softDelete(id: Post['id']): Promise<void> {
     await this.postsRepository.softDelete(id);
+  }
+
+  async addComment(
+    id: Post['id'],
+    author: string,
+    createCommentDto: CreateCommentDto,
+  ): Promise<Post['id']> {
+    const post = await this.findOne({ id });
+
+    if (!post) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          errors: {
+            id: 'postNotFound',
+          },
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const { content } = createCommentDto;
+
+    const newComment = await this.commentsRepository.create({
+      content,
+      author,
+      post: id.toString(),
+    });
+
+    await this.update(id, {
+      comments: [...post.comments, newComment.id.toString()],
+    });
+
+    return id;
   }
 }

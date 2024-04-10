@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { now, HydratedDocument, Types } from 'mongoose';
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { EntityDocumentHelper } from 'src/utils/document-entity-helper';
 import { UserSchemaClass } from 'src/users/infrastructure/persistence/document/entities/user.schema';
 import { PostSchemaClass } from 'src/posts/infrastructure/persistence/document/entities/post.schema';
@@ -16,7 +16,6 @@ export type CommentSchemaDocument = HydratedDocument<CommentSchemaClass>;
 })
 export class CommentSchemaClass extends EntityDocumentHelper {
   @Prop()
-  @Expose({ groups: ['me', 'admin'], toPlainOnly: true })
   content: string;
 
   @Prop({ default: now })

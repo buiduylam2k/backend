@@ -27,21 +27,22 @@ import { Post } from './domain/post';
 import { PostDomainUtils } from './domain/utils';
 import { QueryPostDto } from './dto/query-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { CreateCommentDto } from './dto/create-comment.dto';
 
-@ApiBearerAuth()
-@Roles(RoleEnum.admin, RoleEnum.user)
-@SerializeOptions({
-  groups: ['admin', 'me'],
-})
-@UseGuards(AuthGuard('jwt'), RolesGuard)
-@ApiTags('Blogs')
+@ApiTags('Posts')
 @Controller({
-  path: 'blogs',
+  path: 'posts',
   version: '1',
 })
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @ApiBearerAuth()
+  @Roles(RoleEnum.admin, RoleEnum.user)
+  @SerializeOptions({
+    groups: ['admin', 'me'],
+  })
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @NestPost()
   @HttpCode(HttpStatus.CREATED)
   create(
@@ -49,6 +50,27 @@ export class PostsController {
     @Request() request,
   ): Promise<Post> {
     return this.postsService.create(createPostDto, request.user.id);
+  }
+
+  @ApiBearerAuth()
+  @Roles(RoleEnum.admin, RoleEnum.user)
+  @SerializeOptions({
+    groups: ['admin', 'me'],
+  })
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @NestPost(':id/add-comment')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  addComment(
+    @Param('id') id: Post['id'],
+    @Body() createCommentDto: CreateCommentDto,
+    @Request() request,
+  ): Promise<Post['id']> {
+    return this.postsService.addComment(id, request.user.id, createCommentDto);
   }
 
   @Get()
@@ -100,7 +122,7 @@ export class PostsController {
     return this.postsService.update(id, updatePostDto);
   }
 
-  @Patch(':id')
+  @Patch(':id/add-view')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
     name: 'id',

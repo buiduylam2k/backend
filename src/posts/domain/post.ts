@@ -1,12 +1,9 @@
-import { Expose } from 'class-transformer';
-
 export class Post {
   id: number | string;
 
-  @Expose({ groups: ['me', 'admin'] })
+  title: string;
   content: string;
   banner: string;
-
   views: number;
 
   author: string;

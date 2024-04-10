@@ -5,15 +5,16 @@ import { NullableType } from '../../../../../utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserMapper } from 'src/users/infrastructure/persistence/document/mappers/user.mapper';
-import { CommentRepository } from '../../comment.repository';
 import { CommentSchemaClass } from '../entities/comment.schema';
 import { CommentMapper } from '../mappers/comment.mapper';
-import { Comment } from 'src/comments/domain/comment';
+
+import { PostMapper } from 'src/posts/infrastructure/persistence/document/mappers/post.mapper';
+import { CommentRepository } from '../../comment.repository';
+import { Comment } from 'src/posts/domain/comment';
 import {
   FilterCommentDto,
   SortCommentDto,
-} from 'src/comments/dto/query-comment.dto';
-import { PostMapper } from 'src/posts/infrastructure/persistence/document/mappers/post.mapper';
+} from 'src/posts/dto/query-comment.dto';
 
 @Injectable()
 export class CommentsDocumentRepository implements CommentRepository {
@@ -76,11 +77,32 @@ export class CommentsDocumentRepository implements CommentRepository {
     fields: EntityCondition<Comment>,
   ): Promise<NullableType<Comment>> {
     if (fields.id) {
-      const commentObject = await this.commentsModel.findById(fields.id);
+      const commentObject = await this.commentsModel
+        .findById(fields.id)
+        .populate({
+          path: 'author',
+          transform: UserMapper.toDomain,
+        })
+        .populate({
+          path: 'post',
+          transform: PostMapper.toDomain,
+        })
+        .lean();
       return commentObject ? CommentMapper.toDomain(commentObject) : null;
     }
 
-    const commentObject = await this.commentsModel.findOne(fields);
+    const commentObject = await this.commentsModel
+      .findOne(fields)
+      .populate({
+        path: 'author',
+        transform: UserMapper.toDomain,
+      })
+      .populate({
+        path: 'post',
+        transform: PostMapper.toDomain,
+      })
+      .lean();
+
     return commentObject ? CommentMapper.toDomain(commentObject) : null;
   }
 

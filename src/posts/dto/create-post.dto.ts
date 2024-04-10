@@ -6,6 +6,12 @@ export class CreatePostDto {
   @ApiProperty({ example: 'Hello world' })
   @IsNotEmpty()
   @IsString()
+  @MinLength(PostDomainUtils.MIN_LENGTH_TITLE)
+  title: string;
+
+  @ApiProperty({ example: 'Hello world' })
+  @IsNotEmpty()
+  @IsString()
   @MinLength(PostDomainUtils.MIN_LENGTH_CONTENT)
   content: string;
 

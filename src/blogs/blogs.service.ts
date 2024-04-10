@@ -17,7 +17,7 @@ export class BlogsService {
   ) {}
 
   async create(createBlogDto: CreateBlogDto, authorId: string): Promise<Blog> {
-    const { title, content, tags } = createBlogDto;
+    const { title, content, tags, banner } = createBlogDto;
     const slug = this.slugGenerator.generateUniqueSlug(title);
 
     const clonedPayload = {
@@ -28,6 +28,7 @@ export class BlogsService {
       isDeleted: false,
       author: authorId,
       slug,
+      banner,
     };
 
     const blogObject = await this.blogsRepository.findOne({
@@ -69,6 +70,10 @@ export class BlogsService {
     return this.blogsRepository.findOne(fields);
   }
 
+  getSeo(fields: EntityCondition<Blog>): Promise<NullableType<Blog>> {
+    return this.blogsRepository.findOne(fields);
+  }
+
   async addView(id: Blog['id']): Promise<Blog | null> {
     const blog = await this.blogsRepository.findOne({ id });
 
@@ -99,6 +104,8 @@ export class BlogsService {
     }
 
     const clonedPayload = { ...payload, slug: updateSlug } as Blog;
+
+    console.log('clonedPayload', clonedPayload);
 
     const blog = await this.blogsRepository.findOne({ id });
 

@@ -23,7 +23,6 @@ import { MongooseConfigService } from './database/mongoose-config.service';
 import { BlogsModule } from './blogs/blogs.module';
 import { TagsModule } from './tags/tags.module';
 import { PostsModule } from './posts/posts.module';
-import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -77,7 +76,6 @@ import { CommentsModule } from './comments/comments.module';
     HomeModule,
     BlogsModule,
     PostsModule,
-    CommentsModule,
   ],
 })
 export class AppModule {}

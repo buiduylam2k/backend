@@ -11,6 +11,8 @@ import { PostSchemaClass } from '../entities/post.schema';
 import { Post } from 'src/posts/domain/post';
 import { PostMapper } from '../mappers/post.mapper';
 import { FilterPostDto, SortPostDto } from 'src/posts/dto/query-post.dto';
+import { TagMapper } from 'src/tags/infrastructure/persistence/document/mappers/tag.mapper';
+import { CommentMapper } from '../mappers/comment.mapper';
 
 @Injectable()
 export class PostsDocumentRepository implements PostRepository {
@@ -36,7 +38,10 @@ export class PostsDocumentRepository implements PostRepository {
     paginationOptions: IPaginationOptions;
   }): Promise<Post[]> {
     const where: EntityCondition<Post> = {};
-    console.log('filterOptions', filterOptions);
+
+    if (filterOptions?.tagIds) {
+      where.tags = filterOptions.tagIds as unknown as string[];
+    }
 
     const postObjects = await this.postsModel
       .find(where)
@@ -56,7 +61,18 @@ export class PostsDocumentRepository implements PostRepository {
         path: 'author',
         transform: UserMapper.toDomain,
       })
-      .populate('tags')
+      .populate({
+        path: 'tags',
+        transform: TagMapper.toDomain,
+      })
+      .populate({
+        path: 'comments',
+        transform: CommentMapper.toDomain,
+        populate: {
+          path: 'author',
+          transform: UserMapper.toDomain,
+        },
+      })
       .lean();
 
     return postObjects.map((postObject) => PostMapper.toDomain(postObject));
@@ -64,7 +80,17 @@ export class PostsDocumentRepository implements PostRepository {
 
   async findOne(fields: EntityCondition<Post>): Promise<NullableType<Post>> {
     if (fields.id) {
-      const postObject = await this.postsModel.findById(fields.id);
+      const postObject = await this.postsModel
+        .findById(fields.id)
+        .populate({
+          path: 'author',
+          transform: UserMapper.toDomain,
+        })
+        .populate({
+          path: 'tags',
+          transform: TagMapper.toDomain,
+        })
+        .lean();
       return postObject ? PostMapper.toDomain(postObject) : null;
     }
 

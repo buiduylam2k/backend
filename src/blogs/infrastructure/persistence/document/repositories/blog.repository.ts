@@ -91,6 +91,15 @@ export class BlogsDocumentRepository implements BlogRepository {
     return blogObject ? BlogMapper.toDomain(blogObject) : null;
   }
 
+  async getSeo(slug: string) {
+    return await this.blogsModel
+      .findOne({
+        slug,
+      })
+      .select(['title', 'content', 'slug', 'banner'])
+      .exec();
+  }
+
   async update(id: Blog['id'], payload: Partial<Blog>): Promise<Blog | null> {
     const clonedPayload = { ...payload };
 

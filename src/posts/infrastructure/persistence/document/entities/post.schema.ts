@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { EntityDocumentHelper } from 'src/utils/document-entity-helper';
 import { UserSchemaClass } from 'src/users/infrastructure/persistence/document/entities/user.schema';
 import { TagSchemaClass } from 'src/tags/infrastructure/persistence/document/entities/tag.schema';
-import { CommentSchemaClass } from 'src/comments/infrastructure/persistence/document/entities/comment.schema';
+import { CommentSchemaClass } from './comment.schema';
 
 export type PostSchemaDocument = HydratedDocument<PostSchemaClass>;
 
@@ -16,6 +16,11 @@ export type PostSchemaDocument = HydratedDocument<PostSchemaClass>;
   },
 })
 export class PostSchemaClass extends EntityDocumentHelper {
+  @Prop({
+    index: true,
+  })
+  title: string;
+
   @Prop()
   content: string;
 

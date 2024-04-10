@@ -22,6 +22,10 @@ export abstract class BlogRepository {
 
   abstract findOne(fields: EntityCondition<Blog>): Promise<NullableType<Blog>>;
 
+  abstract getSeo(
+    slug: string,
+  ): Promise<NullableType<Pick<Blog, 'title' | 'content' | 'slug' | 'banner'>>>;
+
   abstract update(
     id: Blog['id'],
     payload: DeepPartial<Blog>,

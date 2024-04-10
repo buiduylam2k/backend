@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CommentSchema } from './entities/comment.schema';
-import { CommentRepository } from '../comment.repository';
 import { CommentsDocumentRepository } from './repositories/comment.repository';
+import { CommentRepository } from '../comment.repository';
 
 @Module({
   imports: [
@@ -18,4 +18,4 @@ import { CommentsDocumentRepository } from './repositories/comment.repository';
   ],
   exports: [CommentRepository],
 })
-export class DocumentBlogPersistenceModule {}
+export class DocumentCommentPersistenceModule {}

@@ -20,4 +20,8 @@ export class CreateBlogDto {
   // @ValidateNested({ each: true })
   // @Type(() => Tag) // Specify type for each element in the array
   tags: string[]; // Array of tag names (strings)
+
+  @ApiPropertyOptional({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
+  @IsString()
+  banner: string;
 }

@@ -75,17 +75,6 @@ export class BlogsController {
     );
   }
 
-  // @Get(':id')
-  // @HttpCode(HttpStatus.OK)
-  // @ApiParam({
-  //   name: 'id',
-  //   type: String,
-  //   required: true,
-  // })
-  // findOne(@Param('id') id: Blog['id']): Promise<NullableType<Blog>> {
-  //   return this.blogsService.findOne({ id });
-  // }
-
   @Get(':slug')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
@@ -94,6 +83,17 @@ export class BlogsController {
     required: true,
   })
   findSlug(@Param('slug') slug: Blog['slug']): Promise<NullableType<Blog>> {
+    return this.blogsService.findOne({ slug });
+  }
+
+  @Get(':id/seo')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'slug',
+    type: String,
+    required: true,
+  })
+  getSeo(@Param('slug') slug: Blog['slug']): Promise<NullableType<Blog>> {
     return this.blogsService.findOne({ slug });
   }
 
@@ -114,19 +114,21 @@ export class BlogsController {
     @Param('id') id: Blog['id'],
     @Body() updateBlogDto: UpdateBlogDto,
   ): Promise<Blog | null> {
+    console.log('updateBlogDto', updateBlogDto);
+
     return this.blogsService.update(id, updateBlogDto);
   }
 
-  @Patch(':id')
-  @HttpCode(HttpStatus.OK)
-  @ApiParam({
-    name: 'id',
-    type: String,
-    required: true,
-  })
-  addView(@Param('id') id: Blog['id']): Promise<Blog | null> {
-    return this.blogsService.addView(id);
-  }
+  // @Patch(':id')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiParam({
+  //   name: 'id',
+  //   type: String,
+  //   required: true,
+  // })
+  // addView(@Param('id') id: Blog['id']): Promise<Blog | null> {
+  //   return this.blogsService.addView(id);
+  // }
 
   @Delete(':id')
   @ApiParam({

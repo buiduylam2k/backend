@@ -1,5 +1,5 @@
+import { Comment } from 'src/posts/domain/comment';
 import { CommentSchemaClass } from '../entities/comment.schema';
-import { Comment } from 'src/comments/domain/comment';
 
 export class CommentMapper {
   static toDomain(raw: CommentSchemaClass): Comment {

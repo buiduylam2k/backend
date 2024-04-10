@@ -4,11 +4,20 @@ import { DocumentBlogPersistenceModule } from './infrastructure/persistence/docu
 import { TagsModule } from 'src/tags/tags.module';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
+import { DocumentCommentPersistenceModule } from './infrastructure/persistence/document/document-persistence-comment.module';
 
 @Module({
-  imports: [DocumentBlogPersistenceModule, TagsModule],
+  imports: [
+    DocumentBlogPersistenceModule,
+    DocumentCommentPersistenceModule,
+    TagsModule,
+  ],
   controllers: [PostsController],
   providers: [PostsService],
-  exports: [PostsService, DocumentBlogPersistenceModule],
+  exports: [
+    PostsService,
+    DocumentBlogPersistenceModule,
+    DocumentCommentPersistenceModule,
+  ],
 })
 export class PostsModule {}

@@ -14,6 +14,7 @@ export class BlogMapper {
     blog.views = raw.views;
     blog.title = raw.title;
     blog.slug = raw.slug;
+    blog.banner = raw.banner;
 
     return blog;
   }
@@ -30,6 +31,7 @@ export class BlogMapper {
     blogEntity.tags = blog.tags;
     blogEntity.views = blog.views;
     blogEntity.slug = blog.slug;
+    blogEntity.banner = blog.banner;
 
     return blogEntity;
   }
