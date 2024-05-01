@@ -74,15 +74,15 @@ export class BlogsService {
     return this.blogsRepository.findOne(fields);
   }
 
-  async addView(id: Blog['id']): Promise<Blog | null> {
-    const blog = await this.blogsRepository.findOne({ id });
+  async addView(slug: Blog['slug']): Promise<void> {
+    const blog = await this.blogsRepository.findOne({ slug });
 
     if (!blog) {
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
           errors: {
-            id: 'blogNotExists',
+            slug: 'blogNotExists',
           },
         },
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -93,10 +93,27 @@ export class BlogsService {
       views: blog.views + 1,
     };
 
-    return this.blogsRepository.update(id, payload);
+    await this.blogsRepository.update(blog.id, payload);
   }
 
-  async update(id: Blog['id'], payload: UpdateBlogDto): Promise<Blog | null> {
+  async update(
+    slug: Blog['slug'],
+    payload: UpdateBlogDto,
+  ): Promise<Blog | null> {
+    const blog = await this.blogsRepository.findOne({ slug });
+
+    if (!blog) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            slug: 'blogNotFound',
+          },
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
     let updateSlug;
 
     if (payload.title) {
@@ -105,27 +122,11 @@ export class BlogsService {
 
     const clonedPayload = { ...payload, slug: updateSlug } as Blog;
 
-    console.log('clonedPayload', clonedPayload);
-
-    const blog = await this.blogsRepository.findOne({ id });
-
-    if (!blog) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            id: 'blogNotExists',
-          },
-        },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-
-    return this.blogsRepository.update(id, clonedPayload);
+    return this.blogsRepository.update(blog.id, clonedPayload);
   }
 
-  async softDelete(id: Blog['id']): Promise<void> {
-    await this.blogsRepository.softDelete(id);
+  async softDelete(slug: Blog['slug']): Promise<void> {
+    await this.blogsRepository.softDelete(slug);
   }
 
   async deleteAll() {

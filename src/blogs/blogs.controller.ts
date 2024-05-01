@@ -86,7 +86,7 @@ export class BlogsController {
     return this.blogsService.findOne({ slug });
   }
 
-  @Get(':id/seo')
+  @Get(':slug/seo')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
     name: 'slug',
@@ -103,42 +103,40 @@ export class BlogsController {
     groups: ['admin', 'me'],
   })
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Patch(':id')
+  @Patch(':slug')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
-    name: 'id',
+    name: 'slug',
     type: String,
     required: true,
   })
   update(
-    @Param('id') id: Blog['id'],
+    @Param('slug') slug: Blog['slug'],
     @Body() updateBlogDto: UpdateBlogDto,
   ): Promise<Blog | null> {
-    console.log('updateBlogDto', updateBlogDto);
-
-    return this.blogsService.update(id, updateBlogDto);
+    return this.blogsService.update(slug, updateBlogDto);
   }
 
-  // @Patch(':id')
-  // @HttpCode(HttpStatus.OK)
-  // @ApiParam({
-  //   name: 'id',
-  //   type: String,
-  //   required: true,
-  // })
-  // addView(@Param('id') id: Blog['id']): Promise<Blog | null> {
-  //   return this.blogsService.addView(id);
-  // }
-
-  @Delete(':id')
+  @Patch(':slug/add-view')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiParam({
-    name: 'id',
+    name: 'slug',
+    type: String,
+    required: true,
+  })
+  addView(@Param('slug') slug: Blog['slug']): Promise<void> {
+    return this.blogsService.addView(slug);
+  }
+
+  @Delete(':slug')
+  @ApiParam({
+    name: 'slug',
     type: String,
     required: true,
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: Blog['id']): Promise<void> {
-    return this.blogsService.softDelete(id);
+  remove(@Param('slug') slug: Blog['slug']): Promise<void> {
+    return this.blogsService.softDelete(slug);
   }
 
   @Delete()

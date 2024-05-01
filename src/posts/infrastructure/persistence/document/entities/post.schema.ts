@@ -25,6 +25,9 @@ export class PostSchemaClass extends EntityDocumentHelper {
   content: string;
 
   @Prop()
+  slug: string;
+
+  @Prop()
   banner: string;
 
   @Prop()

@@ -31,6 +31,6 @@ export abstract class BlogRepository {
     payload: DeepPartial<Blog>,
   ): Promise<Blog | null>;
 
-  abstract softDelete(id: Blog['id']): Promise<void>;
+  abstract softDelete(slug: Blog['slug']): Promise<void>;
   abstract deleteAll(): Promise<void>;
 }

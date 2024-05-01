@@ -4,7 +4,6 @@ import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Blog } from 'src/blogs/domain/blog';
 import { UserMapper } from 'src/users/infrastructure/persistence/document/mappers/user.mapper';
 import { PostRepository } from '../../post.repository';
 import { PostSchemaClass } from '../entities/post.schema';
@@ -78,7 +77,9 @@ export class PostsDocumentRepository implements PostRepository {
     return postObjects.map((postObject) => PostMapper.toDomain(postObject));
   }
 
-  async findOne(fields: EntityCondition<Post>): Promise<NullableType<Post>> {
+  async findOnePopulate(
+    fields: EntityCondition<Post>,
+  ): Promise<NullableType<Post>> {
     if (fields.id) {
       const postObject = await this.postsModel
         .findById(fields.id)
@@ -90,7 +91,43 @@ export class PostsDocumentRepository implements PostRepository {
           path: 'tags',
           transform: TagMapper.toDomain,
         })
+        .populate({
+          path: 'comments',
+          transform: CommentMapper.toDomain,
+          populate: {
+            path: 'author',
+            transform: UserMapper.toDomain,
+          },
+        })
         .lean();
+      return postObject ? PostMapper.toDomain(postObject) : null;
+    }
+
+    const postObject = await this.postsModel
+      .findOne(fields)
+      .populate({
+        path: 'author',
+        transform: UserMapper.toDomain,
+      })
+      .populate({
+        path: 'tags',
+        transform: TagMapper.toDomain,
+      })
+      .populate({
+        path: 'comments',
+        transform: CommentMapper.toDomain,
+        populate: {
+          path: 'author',
+          transform: UserMapper.toDomain,
+        },
+      })
+      .lean();
+    return postObject ? PostMapper.toDomain(postObject) : null;
+  }
+
+  async findOne(fields: EntityCondition<Post>): Promise<NullableType<Post>> {
+    if (fields.id) {
+      const postObject = await this.postsModel.findById(fields.id);
       return postObject ? PostMapper.toDomain(postObject) : null;
     }
 
@@ -111,18 +148,35 @@ export class PostsDocumentRepository implements PostRepository {
     return postObject ? PostMapper.toDomain(postObject) : null;
   }
 
-  async softDelete(id: Blog['id']): Promise<void> {
-    // await this.postsModel.deleteOne({
-    //   _id: id,
-    // });
+  async softDelete(id: Post['id']): Promise<void> {
+    await this.postsModel.deleteOne({
+      _id: id,
+    });
 
-    await this.postsModel.findOneAndUpdate(
-      {
-        _id: id,
-      },
-      {
-        isDeleted: true,
-      },
+    // await this.postsModel.findOneAndUpdate(
+    //   {
+    //     _id: id,
+    //   },
+    //   {
+    //     isDeleted: true,
+    //   },
+    // );
+  }
+
+  async deleteAll() {
+    await this.postsModel.deleteMany({});
+  }
+
+  async getSlug(slug: string): Promise<string> {
+    return (
+      (
+        await this.postsModel
+          .findOne({
+            slug,
+          })
+          .select('slug')
+          .exec()
+      )?.slug || ''
     );
   }
 }

@@ -28,6 +28,7 @@ import { PostDomainUtils } from './domain/utils';
 import { QueryPostDto } from './dto/query-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { DeleteCommentDto } from './dto/delete-comment.dto';
 
 @ApiTags('Posts')
 @Controller({
@@ -53,24 +54,41 @@ export class PostsController {
   }
 
   @ApiBearerAuth()
-  @Roles(RoleEnum.admin, RoleEnum.user)
-  @SerializeOptions({
-    groups: ['admin', 'me'],
-  })
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @NestPost(':id/add-comment')
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiParam({
     name: 'id',
     type: String,
     required: true,
   })
   addComment(
-    @Param('id') id: Post['id'],
+    @Param('id') id: string,
     @Body() createCommentDto: CreateCommentDto,
     @Request() request,
-  ): Promise<Post['id']> {
+  ): Promise<void> {
     return this.postsService.addComment(id, request.user.id, createCommentDto);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id/delete-comment/:cmtId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  @ApiParam({
+    name: 'cmtId',
+    type: String,
+    required: true,
+  })
+  deleteComment(
+    @Param('id') id: string,
+    @Param('cmtId') cmtId: string,
+  ): Promise<void> {
+    return this.postsService.removeComment(id, cmtId);
   }
 
   @Get()
@@ -97,15 +115,26 @@ export class PostsController {
     );
   }
 
-  @Get(':id')
+  @Get(':slug')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
-    name: 'id',
+    name: 'slug',
     type: String,
     required: true,
   })
-  findOne(@Param('id') id: Post['id']): Promise<NullableType<Post>> {
-    return this.postsService.findOne({ id });
+  findOne(@Param('slug') slug: string): Promise<NullableType<Post>> {
+    return this.postsService.findOnePopulate({ slug });
+  }
+
+  @Get(':slug/seo')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'slug',
+    type: String,
+    required: true,
+  })
+  getSlug(@Param('slug') slug: string): Promise<string> {
+    return this.postsService.getPostSlug(slug);
   }
 
   @Patch(':id')
@@ -142,5 +171,17 @@ export class PostsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: Post['id']): Promise<void> {
     return this.postsService.softDelete(id);
+  }
+
+  @Delete('/delete-all')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteAll(): Promise<void> {
+    return this.postsService.deleteAll();
+  }
+
+  @Delete('/delete-comment')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteAllCmt(): Promise<void> {
+    return this.postsService.deleteAllCmt();
   }
 }

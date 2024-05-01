@@ -15,6 +15,7 @@ export class PostMapper {
     post.tags = raw.tags;
     post.views = raw.views;
     post.comments = raw.comments;
+    post.slug = raw.slug;
 
     return post;
   }
@@ -32,6 +33,7 @@ export class PostMapper {
     postEntity.tags = post.tags;
     postEntity.views = post.views;
     postEntity.comments = post.comments;
+    postEntity.slug = post.slug;
 
     return postEntity;
   }

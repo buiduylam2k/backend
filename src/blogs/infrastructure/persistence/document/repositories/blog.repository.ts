@@ -114,15 +114,10 @@ export class BlogsDocumentRepository implements BlogRepository {
     return blogObject ? BlogMapper.toDomain(blogObject) : null;
   }
 
-  async softDelete(id: Blog['id']): Promise<void> {
-    await this.blogsModel.findOneAndUpdate(
-      {
-        _id: id,
-      },
-      {
-        isDeleted: true,
-      },
-    );
+  async softDelete(slug: Blog['slug']): Promise<void> {
+    await this.blogsModel.deleteOne({
+      slug,
+    });
   }
 
   async deleteAll() {

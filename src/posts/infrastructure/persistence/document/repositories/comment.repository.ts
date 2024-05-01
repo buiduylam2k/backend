@@ -136,4 +136,8 @@ export class CommentsDocumentRepository implements CommentRepository {
       },
     );
   }
+
+  async deleteAll() {
+    await this.commentsModel.deleteMany({});
+  }
 }

@@ -9,16 +9,19 @@ import { FilterPostDto, SortPostDto } from './dto/query-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CommentRepository } from './infrastructure/persistence/comment.repository';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { SlugGeneratorService } from 'src/slug-generator/slug-generator.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     private readonly postsRepository: PostRepository,
     private readonly commentsRepository: CommentRepository,
+    private readonly slugGenerator: SlugGeneratorService,
   ) {}
 
   async create(createPostDto: CreatePostDto, authorId: string): Promise<Post> {
     const { content, tags, banner, title } = createPostDto;
+    const slug = this.slugGenerator.generateUniqueSlug(title);
 
     const clonedPayload = {
       banner,
@@ -29,6 +32,7 @@ export class PostsService {
       author: authorId,
       comments: [],
       title,
+      slug,
     };
 
     return this.postsRepository.create(clonedPayload);
@@ -54,6 +58,10 @@ export class PostsService {
     return this.postsRepository.findOne(fields);
   }
 
+  findOnePopulate(fields: EntityCondition<Post>): Promise<NullableType<Post>> {
+    return this.postsRepository.findOnePopulate(fields);
+  }
+
   async addView(id: Post['id']): Promise<Post | null> {
     const post = await this.postsRepository.findOne({ id });
 
@@ -77,8 +85,6 @@ export class PostsService {
   }
 
   async update(id: Post['id'], payload: UpdatePostDto): Promise<Post | null> {
-    const clonedPayload = { ...payload } as unknown as Post;
-
     const post = await this.postsRepository.findOne({ id });
 
     if (!post) {
@@ -93,6 +99,14 @@ export class PostsService {
       );
     }
 
+    let updateSlug;
+
+    if (payload.title) {
+      updateSlug = this.slugGenerator.generateUniqueSlug(payload.title);
+    }
+
+    const clonedPayload = { ...payload, slug: updateSlug } as Post;
+
     return this.postsRepository.update(id, clonedPayload);
   }
 
@@ -101,10 +115,10 @@ export class PostsService {
   }
 
   async addComment(
-    id: Post['id'],
+    id: string,
     author: string,
     createCommentDto: CreateCommentDto,
-  ): Promise<Post['id']> {
+  ): Promise<void> {
     const post = await this.findOne({ id });
 
     if (!post) {
@@ -124,13 +138,45 @@ export class PostsService {
     const newComment = await this.commentsRepository.create({
       content,
       author,
-      post: id.toString(),
+      post: id,
     });
 
     await this.update(id, {
       comments: [...post.comments, newComment.id.toString()],
     });
+  }
 
-    return id;
+  async removeComment(id: string, cmtId: string): Promise<void> {
+    const post = await this.findOne({ id });
+
+    if (!post) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          errors: {
+            id: 'postNotFound',
+          },
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    this.commentsRepository.softDelete(cmtId);
+
+    await this.update(id, {
+      comments: post.comments.filter((comment) => comment !== cmtId),
+    });
+  }
+
+  async getPostSlug(slug: string): Promise<string> {
+    return await this.postsRepository.getSlug(slug);
+  }
+
+  async deleteAll() {
+    return this.postsRepository.deleteAll();
+  }
+
+  async deleteAllCmt() {
+    return this.commentsRepository.deleteAll();
   }
 }

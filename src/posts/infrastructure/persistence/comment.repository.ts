@@ -33,4 +33,5 @@ export abstract class CommentRepository {
   ): Promise<Comment | null>;
 
   abstract softDelete(id: Comment['id']): Promise<void>;
+  abstract deleteAll(): Promise<void>;
 }
