@@ -137,29 +137,29 @@ export class PostsController {
     return this.postsService.getPostSlug(slug);
   }
 
-  @Patch(':id')
+  @Patch(':slug')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
-    name: 'id',
+    name: 'slug',
     type: String,
     required: true,
   })
   update(
-    @Param('id') id: Post['id'],
+    @Param('slug') slug: Post['slug'],
     @Body() updatePostDto: UpdatePostDto,
   ): Promise<Post | null> {
-    return this.postsService.update(id, updatePostDto);
+    return this.postsService.update(slug, updatePostDto);
   }
 
-  @Patch(':id/add-view')
+  @Patch(':slug/add-view')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
-    name: 'id',
+    name: 'slug',
     type: String,
     required: true,
   })
-  addView(@Param('id') id: Post['id']): Promise<Post | null> {
-    return this.postsService.addView(id);
+  addView(@Param('slug') slug: Post['slug']): Promise<Post | null> {
+    return this.postsService.addView(slug);
   }
 
   @Delete(':id')

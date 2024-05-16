@@ -62,15 +62,15 @@ export class PostsService {
     return this.postsRepository.findOnePopulate(fields);
   }
 
-  async addView(id: Post['id']): Promise<Post | null> {
-    const post = await this.postsRepository.findOne({ id });
+  async addView(slug: Post['slug']): Promise<Post | null> {
+    const post = await this.postsRepository.findOne({ slug });
 
     if (!post) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
           errors: {
-            id: 'postNotFound',
+            slug: 'postNotFound',
           },
         },
         HttpStatus.NOT_FOUND,
@@ -81,18 +81,21 @@ export class PostsService {
       views: post.views + 1,
     };
 
-    return this.postsRepository.update(id, payload);
+    return this.postsRepository.update(post.id, payload);
   }
 
-  async update(id: Post['id'], payload: UpdatePostDto): Promise<Post | null> {
-    const post = await this.postsRepository.findOne({ id });
+  async update(
+    slug: Post['slug'],
+    payload: UpdatePostDto,
+  ): Promise<Post | null> {
+    const post = await this.postsRepository.findOne({ slug });
 
     if (!post) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
           errors: {
-            id: 'postNotFound',
+            slug: 'postNotFound',
           },
         },
         HttpStatus.NOT_FOUND,
@@ -107,7 +110,7 @@ export class PostsService {
 
     const clonedPayload = { ...payload, slug: updateSlug } as Post;
 
-    return this.postsRepository.update(id, clonedPayload);
+    return this.postsRepository.update(post.id, clonedPayload);
   }
 
   async softDelete(id: Post['id']): Promise<void> {
