@@ -118,18 +118,18 @@ export class PostsService {
   }
 
   async addComment(
-    id: string,
+    slug: string,
     author: string,
     createCommentDto: CreateCommentDto,
   ): Promise<void> {
-    const post = await this.findOne({ id });
+    const post = await this.findOne({ slug });
 
     if (!post) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
           errors: {
-            id: 'postNotFound',
+            slug: 'postNotFound',
           },
         },
         HttpStatus.NOT_FOUND,
@@ -141,10 +141,10 @@ export class PostsService {
     const newComment = await this.commentsRepository.create({
       content,
       author,
-      post: id,
+      post: post.id.toString(),
     });
 
-    await this.update(id, {
+    await this.update(post.slug, {
       comments: [...post.comments, newComment.id.toString()],
     });
   }

@@ -55,19 +55,23 @@ export class PostsController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @NestPost(':id/add-comment')
+  @NestPost(':slug/add-comment')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiParam({
-    name: 'id',
+    name: 'slug',
     type: String,
     required: true,
   })
   addComment(
-    @Param('id') id: string,
+    @Param('slug') slug: string,
     @Body() createCommentDto: CreateCommentDto,
     @Request() request,
   ): Promise<void> {
-    return this.postsService.addComment(id, request.user.id, createCommentDto);
+    return this.postsService.addComment(
+      slug,
+      request.user.id,
+      createCommentDto,
+    );
   }
 
   @ApiBearerAuth()
