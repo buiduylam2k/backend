@@ -27,11 +27,6 @@ import { QueryAffLinkDto } from './dto/query-aff-link.dto';
 import { UpdateAffLinkDto } from './dto/update-aff-link.dto';
 
 @ApiBearerAuth()
-@Roles(RoleEnum.admin, RoleEnum.user)
-@SerializeOptions({
-  groups: ['admin', 'me'],
-})
-@UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('AffLink')
 @Controller({
   path: 'aff-link',
@@ -40,12 +35,22 @@ import { UpdateAffLinkDto } from './dto/update-aff-link.dto';
 export class AffLinkController {
   constructor(private readonly affLinkService: AffLinkService) {}
 
+  @Roles(RoleEnum.admin)
+  @SerializeOptions({
+    groups: ['admin'],
+  })
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createAffLinkDto: CreateAffLinkDto): Promise<AffLink> {
     return this.affLinkService.create(createAffLinkDto);
   }
 
+  @Roles(RoleEnum.admin)
+  @SerializeOptions({
+    groups: ['admin'],
+  })
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(
@@ -76,6 +81,22 @@ export class AffLinkController {
     return this.affLinkService.getActive();
   }
 
+  @Get(':id/detail')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  detail(@Param('id') id: AffLink['id']) {
+    return this.affLinkService.findOne({ id });
+  }
+
+  @Roles(RoleEnum.admin)
+  @SerializeOptions({
+    groups: ['admin'],
+  })
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
@@ -90,6 +111,11 @@ export class AffLinkController {
     return this.affLinkService.update(id, updateAffLinkDto);
   }
 
+  @Roles(RoleEnum.admin)
+  @SerializeOptions({
+    groups: ['admin'],
+  })
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Delete(':id')
   @ApiParam({
     name: 'id',
