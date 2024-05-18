@@ -166,7 +166,7 @@ export class PostsService {
 
     this.commentsRepository.softDelete(cmtId);
 
-    await this.update(id, {
+    await this.update(post.slug, {
       comments: post.comments.filter((comment) => comment !== cmtId),
     });
   }

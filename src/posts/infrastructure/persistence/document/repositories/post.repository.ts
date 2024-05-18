@@ -152,15 +152,6 @@ export class PostsDocumentRepository implements PostRepository {
     await this.postsModel.deleteOne({
       _id: id,
     });
-
-    // await this.postsModel.findOneAndUpdate(
-    //   {
-    //     _id: id,
-    //   },
-    //   {
-    //     isDeleted: true,
-    //   },
-    // );
   }
 
   async deleteAll() {
