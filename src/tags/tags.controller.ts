@@ -28,12 +28,6 @@ import { Tag } from './domain/tag';
 import { QueryTagDto } from './dto/query-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 
-@ApiBearerAuth()
-@Roles(RoleEnum.admin, RoleEnum.user)
-@SerializeOptions({
-  groups: ['admin', 'me'],
-})
-@UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Tags')
 @Controller({
   path: 'tags',
@@ -42,6 +36,12 @@ import { UpdateTagDto } from './dto/update-tag.dto';
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
+  @ApiBearerAuth()
+  @Roles(RoleEnum.admin, RoleEnum.user)
+  @SerializeOptions({
+    groups: ['admin', 'me'],
+  })
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createTagDto: CreateTagDto, @Request() request): Promise<Tag> {
@@ -72,6 +72,23 @@ export class TagsController {
     );
   }
 
+  @Get('group')
+  @HttpCode(HttpStatus.OK)
+  groupTags() {
+    return this.tagsService.groupsTag();
+  }
+
+  @Get('group/:type')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'type',
+    type: String,
+    required: true,
+  })
+  findTagsByType(@Param('type') type: Tag['type']) {
+    return this.tagsService.findTagFilterByType(type);
+  }
+
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
@@ -83,6 +100,12 @@ export class TagsController {
     return this.tagsService.findOne({ id });
   }
 
+  @ApiBearerAuth()
+  @Roles(RoleEnum.admin, RoleEnum.user)
+  @SerializeOptions({
+    groups: ['admin', 'me'],
+  })
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
@@ -97,6 +120,12 @@ export class TagsController {
     return this.tagsService.update(id, updateTagDto);
   }
 
+  @ApiBearerAuth()
+  @Roles(RoleEnum.admin, RoleEnum.user)
+  @SerializeOptions({
+    groups: ['admin', 'me'],
+  })
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Delete(':id')
   @ApiParam({
     name: 'id',

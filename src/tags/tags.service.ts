@@ -7,6 +7,8 @@ import { TagRepository } from './infrastructure/persistence/tag.repository';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { Tag } from './domain/tag';
 import { FilterTagDto, SortTagDto } from './dto/query-tag.dto';
+import { groupBy } from 'lodash';
+import { TagEnum } from './domain/enum';
 
 @Injectable()
 export class TagsService {
@@ -16,11 +18,11 @@ export class TagsService {
     const clonedPayload = {
       ...createtagDto,
       author: authorId,
-      isDeleted: false,
     };
 
     const tagObject = await this.tagsRepository.findOne({
       name: clonedPayload.name,
+      type: clonedPayload.type,
       isDeleted: false,
     });
 
@@ -65,5 +67,26 @@ export class TagsService {
 
   async softDelete(id: Tag['id']): Promise<void> {
     await this.tagsRepository.softDelete(id);
+  }
+
+  async groupsTag() {
+    const query = {
+      isActiveNav: true,
+    } as Tag;
+
+    const tags = await this.tagsRepository.find(query);
+
+    const groups = groupBy(tags, 'type');
+
+    return groups;
+  }
+
+  async findTagFilterByType(type?: TagEnum) {
+    const query = {
+      isActiveNav: true,
+      type,
+    } as Tag;
+
+    return this.tagsRepository.find(query);
   }
 }

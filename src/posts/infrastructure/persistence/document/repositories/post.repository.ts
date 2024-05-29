@@ -38,8 +38,8 @@ export class PostsDocumentRepository implements PostRepository {
   }): Promise<Post[]> {
     const where: EntityCondition<Post> = {};
 
-    if (filterOptions?.tagIds) {
-      where.tags = filterOptions.tagIds as unknown as string[];
+    if (filterOptions?.tag) {
+      where.tag = filterOptions.tag as unknown as string[];
     }
 
     const postObjects = await this.postsModel
@@ -61,7 +61,7 @@ export class PostsDocumentRepository implements PostRepository {
         transform: UserMapper.toDomain,
       })
       .populate({
-        path: 'tags',
+        path: 'tag',
         transform: TagMapper.toDomain,
       })
       .populate({
@@ -88,7 +88,7 @@ export class PostsDocumentRepository implements PostRepository {
           transform: UserMapper.toDomain,
         })
         .populate({
-          path: 'tags',
+          path: 'tag',
           transform: TagMapper.toDomain,
         })
         .populate({
@@ -110,7 +110,7 @@ export class PostsDocumentRepository implements PostRepository {
         transform: UserMapper.toDomain,
       })
       .populate({
-        path: 'tags',
+        path: 'tag',
         transform: TagMapper.toDomain,
       })
       .populate({

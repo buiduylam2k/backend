@@ -48,9 +48,9 @@ export class PostSchemaClass extends EntityDocumentHelper {
   @Type(() => UserSchemaClass)
   author: string;
 
-  @Prop({ type: [Types.ObjectId], ref: 'TagSchemaClass' })
+  @Prop({ type: Types.ObjectId, ref: 'TagSchemaClass' })
   @Type(() => TagSchemaClass)
-  tags: string[];
+  tag: string;
 
   @Prop({ type: [Types.ObjectId], ref: 'CommentSchemaClass' })
   @Type(() => CommentSchemaClass)

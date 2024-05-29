@@ -17,13 +17,13 @@ export class BlogsService {
   ) {}
 
   async create(createBlogDto: CreateBlogDto, authorId: string): Promise<Blog> {
-    const { title, content, tags, banner } = createBlogDto;
+    const { title, content, tag, banner } = createBlogDto;
     const slug = this.slugGenerator.generateUniqueSlug(title);
 
     const clonedPayload = {
       title,
       content,
-      tags,
+      tag,
       views: 0,
       isDeleted: false,
       author: authorId,

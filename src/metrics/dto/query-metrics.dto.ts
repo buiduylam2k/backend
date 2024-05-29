@@ -6,26 +6,29 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Transform, Type, plainToInstance } from 'class-transformer';
-import { Post } from '../domain/post';
+import { METRICS_ENUM } from '../domain/enum';
+import { Metrics } from '../domain/metrics';
 
-export class FilterPostDto {
-  @ApiPropertyOptional()
+export class FilterMetricsDto {
+  @ApiPropertyOptional({ type: METRICS_ENUM })
   @IsOptional()
-  tag?: string;
+  @ValidateNested({ each: true })
+  @IsString()
+  types?: METRICS_ENUM[] | null;
 }
 
-export class SortPostDto {
+export class SortMetricsDto {
   @ApiProperty()
   @Type(() => String)
   @IsString()
-  orderBy: keyof Post;
+  orderBy: keyof Metrics;
 
   @ApiProperty()
   @IsString()
   order: string;
 }
 
-export class QueryPostDto {
+export class QueryMetricsDto {
   @ApiPropertyOptional()
   @Transform(({ value }) => (value ? Number(value) : 1))
   @IsNumber()
@@ -41,18 +44,20 @@ export class QueryPostDto {
   @ApiPropertyOptional({ type: String })
   @IsOptional()
   @Transform(({ value }) =>
-    value ? plainToInstance(FilterPostDto, JSON.parse(value)) : undefined,
+    value ? plainToInstance(FilterMetricsDto, JSON.parse(value)) : undefined,
   )
   @ValidateNested()
-  @Type(() => FilterPostDto)
-  filters?: FilterPostDto | null;
+  @Type(() => FilterMetricsDto)
+  filters?: FilterMetricsDto | null;
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()
   @Transform(({ value }) => {
-    return value ? plainToInstance(SortPostDto, JSON.parse(value)) : undefined;
+    return value
+      ? plainToInstance(SortMetricsDto, JSON.parse(value))
+      : undefined;
   })
   @ValidateNested({ each: true })
-  @Type(() => SortPostDto)
-  sort?: SortPostDto[] | null;
+  @Type(() => SortMetricsDto)
+  sort?: SortMetricsDto[] | null;
 }

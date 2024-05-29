@@ -20,13 +20,13 @@ export class PostsService {
   ) {}
 
   async create(createPostDto: CreatePostDto, authorId: string): Promise<Post> {
-    const { content, tags, banner, title } = createPostDto;
+    const { content, tag, banner, title } = createPostDto;
     const slug = this.slugGenerator.generateUniqueSlug(title);
 
     const clonedPayload = {
       banner,
       content,
-      tags,
+      tag,
       views: 0,
       isDeleted: false,
       author: authorId,

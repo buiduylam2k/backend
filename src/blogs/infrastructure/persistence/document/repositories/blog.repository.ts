@@ -39,8 +39,8 @@ export class BlogsDocumentRepository implements BlogRepository {
       isDeleted: false,
     };
 
-    if (filterOptions?.tagIds) {
-      where.tags = filterOptions.tagIds as unknown as string[];
+    if (filterOptions?.tag) {
+      where.tag = filterOptions.tag as unknown as string[];
     }
 
     const blogObjects = await this.blogsModel
@@ -62,7 +62,7 @@ export class BlogsDocumentRepository implements BlogRepository {
         transform: UserMapper.toDomain,
       })
       .populate({
-        path: 'tags',
+        path: 'tag',
         transform: TagMapper.toDomain,
       })
       .lean();
@@ -79,7 +79,7 @@ export class BlogsDocumentRepository implements BlogRepository {
           transform: UserMapper.toDomain,
         })
         .populate({
-          path: 'tags',
+          path: 'tag',
           transform: TagMapper.toDomain,
         })
         .lean();

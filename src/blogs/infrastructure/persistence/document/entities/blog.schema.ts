@@ -51,9 +51,9 @@ export class BlogSchemaClass extends EntityDocumentHelper {
   @Type(() => UserSchemaClass)
   author: string;
 
-  @Prop({ type: [Types.ObjectId], ref: 'TagSchemaClass' })
+  @Prop({ type: Types.ObjectId, ref: 'TagSchemaClass' })
   @Type(() => TagSchemaClass)
-  tags: string[];
+  tag: string;
 }
 
 export const BlogSchema = SchemaFactory.createForClass(BlogSchemaClass);

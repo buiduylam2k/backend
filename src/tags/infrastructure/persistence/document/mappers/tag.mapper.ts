@@ -10,6 +10,8 @@ export class TagMapper {
     tag.updatedAt = raw.updatedAt;
     tag.isDeleted = raw.isDeleted;
     tag.author = raw.author;
+    tag.type = raw.type;
+    tag.isActiveNav = raw.isActiveNav;
 
     return tag;
   }
@@ -22,6 +24,8 @@ export class TagMapper {
     tagEntity.updatedAt = tag.updatedAt;
     tagEntity.isDeleted = tag.isDeleted;
     tagEntity.author = tag.author;
+    tagEntity.type = tag.type;
+    tagEntity.isActiveNav = tag.isActiveNav;
 
     return tagEntity;
   }

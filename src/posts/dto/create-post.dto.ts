@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { PostDomainUtils } from '../domain/utils';
 
 export class CreatePostDto {
@@ -15,9 +15,10 @@ export class CreatePostDto {
   @MinLength(PostDomainUtils.MIN_LENGTH_CONTENT)
   content: string;
 
-  @ApiPropertyOptional({ example: ['cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae'] })
-  @IsArray()
-  tags: string[];
+  @ApiPropertyOptional({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
+  @IsString()
+  @IsNotEmpty()
+  tag: string;
 
   @ApiPropertyOptional({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
   @IsString()

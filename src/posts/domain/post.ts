@@ -12,7 +12,7 @@ export class Post {
   slug: string;
 
   author: string;
-  tags: string[];
+  tag: string;
   comments: string[];
 
   createdAt: Date;
@@ -30,7 +30,7 @@ export class PostPopulate {
   slug: string;
 
   author: User;
-  tags: Tag[];
+  tag: Tag;
   comments: Comment[];
 
   createdAt: Date;

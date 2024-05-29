@@ -7,14 +7,11 @@ import {
 } from 'class-validator';
 import { Transform, Type, plainToInstance } from 'class-transformer';
 import { Blog } from '../domain/blog';
-import { Types } from 'mongoose';
 
 export class FilterBlogDto {
   @ApiPropertyOptional()
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => Types.ObjectId)
-  tagIds?: Types.ObjectId[];
+  tag?: String;
 }
 
 export class SortBlogDto {

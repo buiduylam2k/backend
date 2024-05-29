@@ -24,6 +24,7 @@ import { BlogsModule } from './blogs/blogs.module';
 import { TagsModule } from './tags/tags.module';
 import { PostsModule } from './posts/posts.module';
 import { AffLinkModule } from './aff-link/aff-link.module';
+import { MetricsModule } from './metrics/metrics.module';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { AffLinkModule } from './aff-link/aff-link.module';
     BlogsModule,
     PostsModule,
     AffLinkModule,
+    MetricsModule,
   ],
 })
 export class AppModule {}

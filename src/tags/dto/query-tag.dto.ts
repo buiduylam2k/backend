@@ -7,13 +7,12 @@ import {
 } from 'class-validator';
 import { Transform, Type, plainToInstance } from 'class-transformer';
 import { Tag } from '../domain/tag';
+import { TagEnum } from '../domain/enum';
 
 export class FilterTagDto {
-  // @ApiPropertyOptional({ type: RoleDto })
-  // @IsOptional()
-  // @ValidateNested({ each: true })
-  // @Type(() => RoleDto)
-  // roles?: RoleDto[] | null;
+  @ApiPropertyOptional({ enum: TagEnum })
+  @IsOptional()
+  type?: TagEnum;
 }
 
 export class SortTagDto {

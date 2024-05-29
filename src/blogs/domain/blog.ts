@@ -8,6 +8,6 @@ export class Blog {
   isDeleted: boolean;
   views: number;
   author: string;
-  tags: string[];
+  tag: string;
   slug: string;
 }

@@ -45,7 +45,6 @@ export class TagsDocumentRepository implements TagRepository {
   }): Promise<Tag[]> {
     const where: EntityCondition<Tag> = {
       ...filterOptions,
-      isDeleted: false,
     };
 
     const tagsObjects = await this.tagsModel
@@ -96,17 +95,8 @@ export class TagsDocumentRepository implements TagRepository {
   }
 
   async softDelete(id: Tag['id']): Promise<void> {
-    // await this.tagsModel.deleteOne({
-    //   _id: id,
-    // });
-
-    await this.tagsModel.findOneAndUpdate(
-      {
-        _id: id,
-      },
-      {
-        isDeleted: true,
-      },
-    );
+    await this.tagsModel.deleteOne({
+      _id: id,
+    });
   }
 }

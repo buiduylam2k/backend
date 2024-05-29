@@ -10,7 +10,7 @@ export class BlogMapper {
     blog.updatedAt = raw.updatedAt;
     blog.isDeleted = raw.isDeleted;
     blog.author = raw.author;
-    blog.tags = raw.tags;
+    blog.tag = raw.tag;
     blog.views = raw.views;
     blog.title = raw.title;
     blog.slug = raw.slug;
@@ -28,7 +28,7 @@ export class BlogMapper {
     blogEntity.updatedAt = blog.updatedAt;
     blogEntity.isDeleted = blog.isDeleted;
     blogEntity.author = blog.author;
-    blogEntity.tags = blog.tags;
+    blogEntity.tag = blog.tag;
     blogEntity.views = blog.views;
     blogEntity.slug = blog.slug;
     blogEntity.banner = blog.banner;
