@@ -8,12 +8,14 @@ import { Blog } from './domain/blog';
 import { FilterBlogDto, SortBlogDto } from './dto/query-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { SlugGeneratorService } from 'src/slug-generator/slug-generator.service';
+import { GlobalSearchService } from 'src/global-search/global-search.service';
 
 @Injectable()
 export class BlogsService {
   constructor(
     private readonly blogsRepository: BlogRepository,
     private readonly slugGenerator: SlugGeneratorService,
+    private readonly globalSearchService: GlobalSearchService,
   ) {}
 
   async create(createBlogDto: CreateBlogDto, authorId: string): Promise<Blog> {
@@ -46,8 +48,15 @@ export class BlogsService {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
+    const bloged = await this.blogsRepository.create(clonedPayload);
 
-    return this.blogsRepository.create(clonedPayload);
+    await this.globalSearchService.create({
+      name: bloged.title,
+      originId: bloged.id.toString(),
+      type: 'blog',
+      slug: bloged.slug,
+    });
+    return bloged;
   }
 
   findManyWithPagination({
@@ -114,10 +123,14 @@ export class BlogsService {
       );
     }
 
-    let updateSlug;
+    let updateSlug = blog.slug;
 
     if (payload.title) {
       updateSlug = this.slugGenerator.generateUniqueSlug(payload.title);
+      await this.globalSearchService.updateByOriginId(blog.id.toString(), {
+        name: payload.title,
+        slug: updateSlug,
+      });
     }
 
     const clonedPayload = { ...payload, slug: updateSlug } as Blog;
@@ -126,7 +139,11 @@ export class BlogsService {
   }
 
   async softDelete(slug: Blog['slug']): Promise<void> {
-    await this.blogsRepository.softDelete(slug);
+    const blog = await this.findOne({ slug });
+    if (blog) {
+      await this.blogsRepository.softDelete(slug);
+      await this.globalSearchService.deleteByOriginId(blog.id.toString());
+    }
   }
 
   async deleteAll() {

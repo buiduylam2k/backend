@@ -87,7 +87,17 @@ export class BlogsDocumentRepository implements BlogRepository {
       return blogObject ? BlogMapper.toDomain(blogObject) : null;
     }
 
-    const blogObject = await this.blogsModel.findOne(fields);
+    const blogObject = await this.blogsModel
+      .findOne(fields)
+      .populate({
+        path: 'author',
+        transform: UserMapper.toDomain,
+      })
+      .populate({
+        path: 'tag',
+        transform: TagMapper.toDomain,
+      })
+      .lean();
     return blogObject ? BlogMapper.toDomain(blogObject) : null;
   }
 

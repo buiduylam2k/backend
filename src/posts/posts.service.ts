@@ -10,6 +10,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { CommentRepository } from './infrastructure/persistence/comment.repository';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { SlugGeneratorService } from 'src/slug-generator/slug-generator.service';
+import { GlobalSearchService } from 'src/global-search/global-search.service';
 
 @Injectable()
 export class PostsService {
@@ -17,6 +18,7 @@ export class PostsService {
     private readonly postsRepository: PostRepository,
     private readonly commentsRepository: CommentRepository,
     private readonly slugGenerator: SlugGeneratorService,
+    private readonly globalSearchService: GlobalSearchService,
   ) {}
 
   async create(createPostDto: CreatePostDto, authorId: string): Promise<Post> {
@@ -34,8 +36,14 @@ export class PostsService {
       title,
       slug,
     };
-
-    return this.postsRepository.create(clonedPayload);
+    const posted = await this.postsRepository.create(clonedPayload);
+    await this.globalSearchService.create({
+      name: posted.title,
+      originId: posted.id.toString(),
+      type: 'post',
+      slug: posted.slug,
+    });
+    return posted;
   }
 
   findManyWithPagination({
@@ -102,10 +110,14 @@ export class PostsService {
       );
     }
 
-    let updateSlug;
+    let updateSlug = post.slug;
 
     if (payload.title) {
       updateSlug = this.slugGenerator.generateUniqueSlug(payload.title);
+      await this.globalSearchService.updateByOriginId(post.id.toString(), {
+        name: payload.title,
+        slug: updateSlug,
+      });
     }
 
     const clonedPayload = { ...payload, slug: updateSlug } as Post;
@@ -115,6 +127,7 @@ export class PostsService {
 
   async softDelete(id: Post['id']): Promise<void> {
     await this.postsRepository.softDelete(id);
+    await this.globalSearchService.deleteByOriginId(id.toString());
   }
 
   async addComment(
