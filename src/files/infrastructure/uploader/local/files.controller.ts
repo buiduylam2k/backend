@@ -47,6 +47,11 @@ export class FilesLocalController {
     return this.filesService.create(file);
   }
 
+  @Get('sitemap_index')
+  sitemapXml(@Response() response) {
+    return response.sendFile('sitemap_index.xml', { root: './assets' });
+  }
+
   @Get(':path')
   @ApiParam({
     name: 'path',
