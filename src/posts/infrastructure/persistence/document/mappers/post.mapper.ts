@@ -12,7 +12,7 @@ export class PostMapper {
     post.updatedAt = raw.updatedAt;
     post.isDeleted = raw.isDeleted;
     post.author = raw.author;
-    post.tag = raw.tag;
+    post.answer = raw.answer;
     post.views = raw.views;
     post.comments = raw.comments;
     post.slug = raw.slug;
@@ -30,7 +30,7 @@ export class PostMapper {
     postEntity.updatedAt = post.updatedAt;
     postEntity.isDeleted = post.isDeleted;
     postEntity.author = post.author;
-    postEntity.tag = post.tag;
+    postEntity.answer = post.answer;
     postEntity.views = post.views;
     postEntity.comments = post.comments;
     postEntity.slug = post.slug;

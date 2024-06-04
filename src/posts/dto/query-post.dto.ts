@@ -9,9 +9,9 @@ import { Transform, Type, plainToInstance } from 'class-transformer';
 import { Post } from '../domain/post';
 
 export class FilterPostDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  tag?: string;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // tag?: string;
 }
 
 export class SortPostDto {

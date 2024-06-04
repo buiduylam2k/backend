@@ -7,6 +7,7 @@ import { PostsService } from './posts.service';
 import { DocumentCommentPersistenceModule } from './infrastructure/persistence/document/document-persistence-comment.module';
 import { SlugGeneratorModule } from 'src/slug-generator/slug-generator.module';
 import { GlobalSearchModule } from 'src/global-search/global-search.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { GlobalSearchModule } from 'src/global-search/global-search.module';
     TagsModule,
     SlugGeneratorModule,
     GlobalSearchModule,
+    UsersModule,
   ],
   controllers: [PostsController],
   providers: [PostsService],

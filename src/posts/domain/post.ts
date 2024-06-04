@@ -12,12 +12,13 @@ export class Post {
   slug: string;
 
   author: string;
-  tag: string;
+  // tag: string;
   comments: string[];
 
   createdAt: Date;
   updatedAt: Date;
   isDeleted: boolean;
+  answer: string;
 }
 
 export class PostPopulate {

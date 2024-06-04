@@ -12,8 +12,16 @@ import {
   HttpCode,
   SerializeOptions,
   Request,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { infinityPagination } from 'src/utils/infinity-pagination';
@@ -28,7 +36,8 @@ import { PostDomainUtils } from './domain/utils';
 import { QueryPostDto } from './dto/query-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { DeleteCommentDto } from './dto/delete-comment.dto';
+import { InsertPostCsvDto } from './dto/insert-csv-post.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Posts')
 @Controller({
@@ -51,6 +60,43 @@ export class PostsController {
     @Request() request,
   ): Promise<Post> {
     return this.postsService.create(createPostDto, request.user.id);
+  }
+
+  @Delete('delete-all')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteAll(): Promise<void> {
+    return this.postsService.deleteAll();
+  }
+
+  @Delete('/delete-comment')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteAllCmt(): Promise<void> {
+    return this.postsService.deleteAllCmt();
+  }
+
+  @NestPost('insert-csv')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+        pwd: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  insertCsv(
+    @Body() insertPostCsv: InsertPostCsvDto,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<void> {
+    return this.postsService.insertCsv(insertPostCsv, file);
   }
 
   @ApiBearerAuth()
@@ -175,17 +221,5 @@ export class PostsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: Post['id']): Promise<void> {
     return this.postsService.softDelete(id);
-  }
-
-  @Delete('/delete-all')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  deleteAll(): Promise<void> {
-    return this.postsService.deleteAll();
-  }
-
-  @Delete('/delete-comment')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  deleteAllCmt(): Promise<void> {
-    return this.postsService.deleteAllCmt();
   }
 }

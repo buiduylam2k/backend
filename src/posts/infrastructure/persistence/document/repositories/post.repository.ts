@@ -10,7 +10,6 @@ import { PostSchemaClass } from '../entities/post.schema';
 import { Post } from 'src/posts/domain/post';
 import { PostMapper } from '../mappers/post.mapper';
 import { FilterPostDto, SortPostDto } from 'src/posts/dto/query-post.dto';
-import { TagMapper } from 'src/tags/infrastructure/persistence/document/mappers/tag.mapper';
 import { CommentMapper } from '../mappers/comment.mapper';
 
 @Injectable()
@@ -38,10 +37,6 @@ export class PostsDocumentRepository implements PostRepository {
   }): Promise<Post[]> {
     const where: EntityCondition<Post> = {};
 
-    if (filterOptions?.tag) {
-      where.tag = filterOptions.tag as unknown as string[];
-    }
-
     const postObjects = await this.postsModel
       .find(where)
       .sort(
@@ -59,10 +54,6 @@ export class PostsDocumentRepository implements PostRepository {
       .populate({
         path: 'author',
         transform: UserMapper.toDomain,
-      })
-      .populate({
-        path: 'tag',
-        transform: TagMapper.toDomain,
       })
       .populate({
         path: 'comments',
@@ -88,10 +79,6 @@ export class PostsDocumentRepository implements PostRepository {
           transform: UserMapper.toDomain,
         })
         .populate({
-          path: 'tag',
-          transform: TagMapper.toDomain,
-        })
-        .populate({
           path: 'comments',
           transform: CommentMapper.toDomain,
           populate: {
@@ -108,10 +95,6 @@ export class PostsDocumentRepository implements PostRepository {
       .populate({
         path: 'author',
         transform: UserMapper.toDomain,
-      })
-      .populate({
-        path: 'tag',
-        transform: TagMapper.toDomain,
       })
       .populate({
         path: 'comments',

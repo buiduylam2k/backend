@@ -11,6 +11,12 @@ import { CommentRepository } from './infrastructure/persistence/comment.reposito
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { SlugGeneratorService } from 'src/slug-generator/slug-generator.service';
 import { GlobalSearchService } from 'src/global-search/global-search.service';
+import { InsertPostCsvDto } from './dto/insert-csv-post.dto';
+import * as fs from 'fs';
+import path from 'path';
+import csv from 'csvtojson';
+import bcrypt from 'bcryptjs';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class PostsService {
@@ -19,22 +25,23 @@ export class PostsService {
     private readonly commentsRepository: CommentRepository,
     private readonly slugGenerator: SlugGeneratorService,
     private readonly globalSearchService: GlobalSearchService,
+    private readonly usersService: UsersService,
   ) {}
 
   async create(createPostDto: CreatePostDto, authorId: string): Promise<Post> {
-    const { content, tag, banner, title } = createPostDto;
+    const { content, banner, title, answer } = createPostDto;
     const slug = this.slugGenerator.generateUniqueSlug(title);
 
     const clonedPayload = {
       banner,
       content,
-      tag,
       views: 0,
       isDeleted: false,
       author: authorId,
       comments: [],
       title,
       slug,
+      answer
     };
     const posted = await this.postsRepository.create(clonedPayload);
     await this.globalSearchService.create({
@@ -44,6 +51,56 @@ export class PostsService {
       slug: posted.slug,
     });
     return posted;
+  }
+
+  async insertCsv(insertPostCsv: InsertPostCsvDto, file: Express.Multer.File) {
+    const user = await this.usersService.findOne({
+      email: 'admin@example.com',
+    });
+
+    if (!user) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            email: 'notFound',
+          },
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    const isValidPassword = await bcrypt.compare(
+      insertPostCsv.pwd,
+      user.password!,
+    );
+
+    if (!isValidPassword) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            password: 'incorrectPassword',
+          },
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    const postPath = `${path.join(__dirname, '../..', 'assets')}/posts.csv`;
+    fs.writeFileSync(postPath, file.buffer);
+    const output = (await csv().fromFile(postPath)) as Array<Post>;
+    for await (const post of output) {
+      await this.create(
+        {
+          title: post.title,
+          banner: post.banner,
+          content: post.content,
+          answer: post.answer,
+        },
+        user.id.toString(),
+      );
+    }
   }
 
   findManyWithPagination({

@@ -1,6 +1,6 @@
 export enum TagEnum {
   CLASS = 'class',
   BLOG = 'blog',
-  POST = 'post',
+  // POST = 'post',
   HOME = 'home',
 }

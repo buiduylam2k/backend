@@ -52,6 +52,11 @@ export class FilesLocalController {
     return response.sendFile('sitemap_index.xml', { root: './assets' });
   }
 
+  @Get('logo.png')
+  logo(@Response() response) {
+    return response.sendFile('logo.png', { root: './assets' });
+  }
+
   @Get(':path')
   @ApiParam({
     name: 'path',

@@ -15,10 +15,10 @@ export class CreatePostDto {
   @MinLength(PostDomainUtils.MIN_LENGTH_CONTENT)
   content: string;
 
-  @ApiPropertyOptional({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
+  @ApiPropertyOptional({ example: 'answer' })
   @IsString()
   @IsNotEmpty()
-  tag: string;
+  answer: string;
 
   @ApiPropertyOptional({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
   @IsString()
