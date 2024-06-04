@@ -19,6 +19,10 @@ export class PostsDocumentRepository implements PostRepository {
     private readonly postsModel: Model<PostSchemaClass>,
   ) {}
 
+  total(): Promise<number> {
+    return this.postsModel.countDocuments();
+  }
+
   async create(data: Post): Promise<Post> {
     const persistenceModel = PostMapper.toPersistence(data);
     const createdPost = new this.postsModel(persistenceModel);

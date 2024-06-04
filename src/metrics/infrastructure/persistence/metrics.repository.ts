@@ -8,7 +8,9 @@ import {
 } from 'src/metrics/dto/query-metrics.dto';
 
 export abstract class MetricsRepository {
-  abstract create(data: Pick<Metrics, 'type'>): Promise<Metrics>;
+  abstract create(
+    data: Pick<Metrics, 'type' | 'name' | 'originId'>,
+  ): Promise<Metrics>;
 
   abstract find(
     fields: FilterQuery<Metrics>,

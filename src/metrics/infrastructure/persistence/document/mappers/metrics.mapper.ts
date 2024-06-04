@@ -8,6 +8,8 @@ export class MetricsMapper {
     metrics.createdAt = raw.createdAt;
     metrics.updatedAt = raw.updatedAt;
     metrics.type = raw.type;
+    metrics.name = raw.name;
+    metrics.originId = raw.originId;
 
     return metrics;
   }
@@ -18,6 +20,8 @@ export class MetricsMapper {
     metricsEntity.type = metrics.type;
     metricsEntity.createdAt = metrics.createdAt;
     metricsEntity.updatedAt = metrics.updatedAt;
+    metricsEntity.name = metrics.name;
+    metricsEntity.originId = metrics.originId;
 
     return metricsEntity;
   }

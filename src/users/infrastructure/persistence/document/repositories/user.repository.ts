@@ -16,8 +16,13 @@ export class UsersDocumentRepository implements UserRepository {
     @InjectModel(UserSchemaClass.name)
     private readonly usersModel: Model<UserSchemaClass>,
   ) {}
+  total(): Promise<number> {
+    return this.usersModel.countDocuments();
+  }
 
   async create(data: User): Promise<User> {
+    this.usersModel.countDocuments();
+
     const persistenceModel = UserMapper.toPersistence(data);
     const createdUser = new this.usersModel(persistenceModel);
     const userObject = await createdUser.save();

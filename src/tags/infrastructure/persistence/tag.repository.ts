@@ -35,4 +35,5 @@ export abstract class TagRepository {
   ): Promise<Tag | null>;
 
   abstract softDelete(id: Tag['id']): Promise<void>;
+  abstract total(): Promise<number>;
 }

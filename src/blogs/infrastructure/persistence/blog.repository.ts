@@ -33,4 +33,5 @@ export abstract class BlogRepository {
 
   abstract softDelete(slug: Blog['slug']): Promise<void>;
   abstract deleteAll(): Promise<void>;
+  abstract total(): Promise<number>;
 }

@@ -2,7 +2,7 @@ import { NullableType } from 'src/utils/types/nullable.type';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { DeepPartial } from 'src/utils/types/deep-partial.type';
-import { Post, PostPopulate } from 'src/posts/domain/post';
+import { Post } from 'src/posts/domain/post';
 import { FilterPostDto, SortPostDto } from 'src/posts/dto/query-post.dto';
 
 export abstract class PostRepository {
@@ -36,4 +36,6 @@ export abstract class PostRepository {
   abstract deleteAll(): Promise<void>;
 
   abstract getSlug(slug: string): Promise<string>;
+
+  abstract total(): Promise<number>;
 }

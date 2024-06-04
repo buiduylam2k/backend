@@ -18,6 +18,9 @@ export class BlogsDocumentRepository implements BlogRepository {
     @InjectModel(BlogSchemaClass.name)
     private readonly blogsModel: Model<BlogSchemaClass>,
   ) {}
+  total(): Promise<number> {
+    return this.blogsModel.countDocuments();
+  }
 
   async create(data: Blog): Promise<Blog> {
     const persistenceModel = BlogMapper.toPersistence(data);

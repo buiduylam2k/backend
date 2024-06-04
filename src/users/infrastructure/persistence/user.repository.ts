@@ -28,4 +28,5 @@ export abstract class UserRepository {
   ): Promise<User | null>;
 
   abstract softDelete(id: User['id']): Promise<void>;
+  abstract total(): Promise<number>;
 }

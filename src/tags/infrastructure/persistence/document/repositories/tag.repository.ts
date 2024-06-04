@@ -18,6 +18,10 @@ export class TagsDocumentRepository implements TagRepository {
     private readonly tagsModel: Model<TagSchemaClass>,
   ) {}
 
+  total(): Promise<number> {
+    return this.tagsModel.countDocuments();
+  }
+
   async find(
     filter: FilterQuery<Tag>,
     projection?: ProjectionType<Tag> | null | undefined,
